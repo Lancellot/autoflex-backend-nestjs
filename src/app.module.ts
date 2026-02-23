@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RawMaterial } from './rawMaterials/entities/rawMaterial.entity';
+import { RawMaterialsModule } from './rawMaterials/rawMaterials.module';
 
 @Module({
   imports: [
@@ -10,9 +12,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'root',
       password: 'root',
       database: 'db_autoflex',
-      entities: [],
+      entities: [RawMaterial],
       synchronize: true,
     }),
+    RawMaterialsModule,
   ],
   controllers: [],
   providers: [],
