@@ -2,12 +2,15 @@ import { Repository, In, DeleteResult } from "typeorm";
 import { RawMaterial } from "../entities/rawMaterial.entity";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Product } from "../../products/entities/product.entity";
 
 @Injectable()
 export class RawMaterialService {
     constructor(
         @InjectRepository(RawMaterial)
-        private readonly rawMaterialRepository: Repository<RawMaterial>
+        private rawMaterialRepository: Repository<RawMaterial>,
+        @InjectRepository(Product)
+        private productRepository: Repository<Product>
     ) {}
 
     async findById(id: number): Promise<RawMaterial> {
