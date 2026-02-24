@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from "@nestjs/common";
 import { Product } from "../entities/product.entity";
 import { ProductService } from "../services/product.service";
 
@@ -14,7 +14,6 @@ export class ProductController {
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
-    @HttpCode(HttpStatus.OK)
     async findById(@Param('id') id: number): Promise<Product> {
         return this.productService.findByid(id);
     }
@@ -25,15 +24,21 @@ export class ProductController {
         return this.productService.findByName(name);
     }
 
+    @Get('/raw-material/:rawMaterialId')
+    @HttpCode(HttpStatus.OK)
+    async findByRawMaterial(@Param('rawMaterialId') rawMaterialId: number): Promise<Product[]> {
+        return this.productService.findByRawMaterial(rawMaterialId);
+    }
+
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async create(product: Product): Promise<Product> {
+    async create(@Body() product: Product): Promise<Product> {  // ✅ @Body() adicionado
         return this.productService.create(product);
     }
 
     @Put()
     @HttpCode(HttpStatus.OK)
-    async update(product: Product): Promise<Product> {
+    async update(@Body() product: Product): Promise<Product> {  // ✅ @Body() adicionado
         return this.productService.update(product);
     }
 
@@ -42,4 +47,4 @@ export class ProductController {
     async delete(@Param('id') id: number): Promise<void> {
         await this.productService.delete(id);
     }
-};
+}

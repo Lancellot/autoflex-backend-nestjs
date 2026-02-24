@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "../entities/product.entity";
 import { ILike, Repository, DeleteResult } from 'typeorm';
@@ -36,6 +36,19 @@ export class ProductService {
         return product;
     }
 
+    async findByRawMaterial(rawMaterialId: number): Promise<Product[]> {
+        await this.rawService.findById(rawMaterialId); // valida se existe
+
+        return this.productRepository.find({
+            where: {
+                rawMaterial: { id: rawMaterialId }
+            },
+            relations: {
+                rawMaterial: true
+            }
+        });
+    }
+
     async findByName(name: string): Promise<Product[]> {
         return this.productRepository.find({
             where: {
@@ -48,7 +61,16 @@ export class ProductService {
     }
 
     async create(product: Product): Promise<Product> {
+        if (!product.rawMaterial?.id) {
+            throw new BadRequestException('rawMaterial.id é obrigatório');
+        }
+
         const rawMaterial = await this.rawService.findById(product.rawMaterial.id);
+
+        if (!rawMaterial) {
+            throw new NotFoundException(`RawMaterial com id ${product.rawMaterial.id} não encontrado`);
+        }
+
         product.rawMaterial = rawMaterial;
         return this.productRepository.save(product);
     }
