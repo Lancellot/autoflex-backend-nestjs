@@ -28,12 +28,6 @@ export class RawMaterialService {
         return await this.rawMaterialRepository.find();
     }
 
-    async findByIds(ids: number[]): Promise<RawMaterial[]> {
-        return await this.rawMaterialRepository.findBy({
-            id: In(ids)
-        });
-    }
-
     async create(rawMaterial: RawMaterial): Promise<RawMaterial> {
         const newRawMaterial = this.rawMaterialRepository.create(rawMaterial);
         return await this.rawMaterialRepository.save(newRawMaterial);

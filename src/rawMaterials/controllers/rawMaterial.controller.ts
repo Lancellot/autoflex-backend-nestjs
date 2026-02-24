@@ -24,16 +24,6 @@ export class RawMaterialController {
         return this.rawMaterialService.findAll();
     }
 
-    // Exemplo: /raw-materials/ids?ids=1,2,3
-    @Get('/ids')
-    @HttpCode(HttpStatus.OK)
-    findByIds(
-        @Query('ids') ids: string
-    ): Promise<RawMaterial[]> {
-        const parsedIds = ids.split(',').map(id => Number(id));
-        return this.rawMaterialService.findByIds(parsedIds);
-    }
-
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     findById(
