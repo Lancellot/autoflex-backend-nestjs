@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "../entities/product.entity";
-import { ILike, Repository, DeleteResult } from 'typeorm';
+import { ILike, Repository, DeleteResult, FindOptionsWhere } from 'typeorm';
 import { RawMaterialService } from "../../rawMaterials/services/rawMaterial.service";
 
 @Injectable()
@@ -14,22 +14,15 @@ export class ProductService {
 
     async findAll(): Promise<Product[]> {
         return this.productRepository.find({
-            relations: {
-                rawMaterial: true
-            }
+            relations: ['rawMaterial']
         });
     }
 
     async findByid(id: number): Promise<Product> {
         const product = await this.productRepository.findOne({
-            where: {
-                id
-            },
-            relations: {
-                rawMaterial: true
-            }
+            where: { id },
+            relations: ['rawMaterial']
         });
-
         if (!product) {
             throw new HttpException('Produto não encontrado', HttpStatus.NOT_FOUND);
         }
@@ -37,15 +30,12 @@ export class ProductService {
     }
 
     async findByRawMaterial(rawMaterialId: number): Promise<Product[]> {
-        await this.rawService.findById(rawMaterialId); // valida se existe
-
+        await this.rawService.findById(rawMaterialId);
         return this.productRepository.find({
             where: {
                 rawMaterial: { id: rawMaterialId }
-            },
-            relations: {
-                rawMaterial: true
-            }
+            } as FindOptionsWhere<Product>,
+            relations: ['rawMaterial']
         });
     }
 
@@ -54,9 +44,7 @@ export class ProductService {
             where: {
                 name: ILike(`%${name}%`)
             },
-            relations: {
-                rawMaterial: true
-            }
+            relations: ['rawMaterial']
         });
     }
 
@@ -64,19 +52,16 @@ export class ProductService {
         if (!product.rawMaterial?.id) {
             throw new BadRequestException('rawMaterial.id é obrigatório');
         }
-
         const rawMaterial = await this.rawService.findById(product.rawMaterial.id);
-
         if (!rawMaterial) {
             throw new NotFoundException(`RawMaterial com id ${product.rawMaterial.id} não encontrado`);
         }
-
         product.rawMaterial = rawMaterial;
         return this.productRepository.save(product);
     }
 
     async update(product: Product): Promise<Product> {
-        const productUpdated = await this.findByid(product.id);
+        await this.findByid(product.id);
         const rawMaterial = await this.rawService.findById(product.rawMaterial.id);
         product.rawMaterial = rawMaterial;
         return this.productRepository.save(product);

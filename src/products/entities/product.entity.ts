@@ -4,20 +4,20 @@ import { RawMaterial } from "../../rawMaterials/entities/rawMaterial.entity";
 @Entity({ name: 'tb_products' })
 export class Product {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id: number;
 
     @Column()
-    name!: string;
+    name: string;
 
     @Column({ nullable: true })
     description: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    price!: number;
+    price: number;
 
     @CreateDateColumn()
-    createdAt!: Date;
+    createdAt: Date;
 
     @ManyToOne(() => RawMaterial, (rawMaterial) => rawMaterial.product)
-    rawMaterial!: RawMaterial;
+    rawMaterial: RawMaterial;
 }
